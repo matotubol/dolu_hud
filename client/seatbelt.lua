@@ -35,11 +35,10 @@ RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
 
 local function init()
 	local ped = GetPlayerPed(-1)
-	local car = GetVehiclePedIsIn(ped, false)
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
 
-	while GetVehiclePedIsIn(ped, false) > 0 and GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
+	while GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
 		Wait(1)
 
 			if seatbelt then DisableControlAction(0, 75) end
@@ -72,8 +71,8 @@ local function init()
 end
 
 CreateThread(function ()
-	 while true do
-		Wait(1)
+	 repeat
 		init()
-		end
+		Wait(100)
+	 until  GetVehiclePedIsIn(ped, false) > 0
 end)
