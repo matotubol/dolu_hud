@@ -36,6 +36,10 @@ local function init()
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
 
+	if math.ceil(GetVehicleBodyHealth(cache.vehicle)) < 700 then
+		SetVehicleUndriveable(cache.vehicle, true)
+	end
+
 	while GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
 		Wait(1)
 
@@ -50,7 +54,7 @@ local function init()
 				velBuffer[i] = GetEntityVelocity(cache.vehicle)
 			end
 
-			 print(currentDamage - previousDamage[2])
+			 print(currentDamage)
 
 			if currentDamage - previousDamage[2] > 20 then
 				SetVehicleEngineOn(cache.vehicle, false, true, false)
