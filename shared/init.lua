@@ -2,8 +2,10 @@ local server = IsDuplicityVersion()
 Config = json.decode(LoadResourceFile(cache.resource, 'config.json'))
 
 if server then
+	SetConvarReplicated('game_enableFlyThroughWindscreen', 'true') -- Enable flying trough windscreen while in vehicle
 	SetConvarReplicated('voice_enableUi', 'false') -- Hide pma_voice hud
 else
+
 	PlayerIsLoaded = false
 	PlayerIsDead = false
 	statuses = {}
@@ -51,6 +53,10 @@ else
 
 	RegisterNUICallback('nuiReady', function(_, cb)
 		nuiReady = true
+		SendNUIMessage({
+			action = 'setConfig',
+			data = Config or {}
+		})
 		cb(1)
 	end)
 

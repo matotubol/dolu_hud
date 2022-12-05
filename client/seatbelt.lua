@@ -81,3 +81,5 @@ CreateThread(function ()
 		Wait(100)
 	 until  GetVehiclePedIsIn(ped, false) > 0
 end)
+RegisterCommand('dolu_hud:seatbelt', toggleSeatbelt)
+RegisterKeyMapping('dolu_hud:seatbelt', 'Toggle seatbelt', 'keyboard', Config.seatbeltKey)

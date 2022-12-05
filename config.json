@@ -3,15 +3,16 @@
   "speedo": true,
   "hideRadarOnFoot": true,
   "speedoMetrics": "kmh",
+  "seatbeltKey": "K",
   "setMaxHealth": true,
   "colors": {
-    "health": "teal",
-    "armour": "blue",
+    "health": "teal.4",
+    "armour": "blue.5",
     "voice": "gray.2",
     "oxygen": "cyan",
     "speedo": "teal",
     "hunger": "yellow",
-    "thirst": "blue",
+    "thirst": "cyan.5",
     "stress": "orange",
     "drunk": "grape"
   }
