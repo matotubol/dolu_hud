@@ -39,8 +39,6 @@ local function init()
 	local ped = GetPlayerPed(-1)
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
-	if LocalPlayer.state.seatbelt then lib.disableControls:Add(75) end
-
 
 	while GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
 		Wait(1)
@@ -79,7 +77,11 @@ end
 CreateThread(function ()
 	 repeat
 		if not IsPedInAnyVehicle(PlayerPedId(), false) then
-			LocalPlayer.state:set('seatbelt', false, false) --when player is not in vehicle set to false
+			LocalPlayer.state:set('seatbelt', false, true) --when player is not in vehicle set to false
+			SendNUIMessage({
+				action = 'setSeatbelt',
+				data = LocalPlayer.state.seatbelt
+			})
 		end
 		print(LocalPlayer.state.seatbelt)
 		init()
