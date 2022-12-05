@@ -1,7 +1,6 @@
 local velBuffer    = {}
-local beltOn       = false
-local wasInCar     = false
-previousDamage = {}
+local seatbelt = false
+previousDamage     = {}
 
 
 IsCar = function(veh)
@@ -16,66 +15,68 @@ Fwv = function (entity)
 		    return { x = math.cos(hr) * 2.0, y = math.sin(hr) * 2.0 }
       end
 
+RegisterCommand('+seatbelt', function ()
+
+	if not seatbelt then
+		seatbelt = true
+	elseif seatbelt then
+		seatbelt = false
+	end
+
+	SendNUIMessage({
+	action = 'setSeatbelt',
+	data = seatbelt
+})	  
+	
+end)
+
+RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
+
+
 local function init()
 	local ped = GetPlayerPed(-1)
 	local car = GetVehiclePedIsIn(ped, false)
 
-	while math.ceil(GetEntitySpeed(cache.vehicle)) * 3.6 > 5 do
-		Wait(100)
-		
-				
-		if cache.vehicle ~= 0 then
-		
-			wasInCar = true
+	while  true do
+		Wait(1)		
+		if car ~= 0 then
+					
+			if seatbelt then DisableControlAction(0, 75) end
 			
-			if beltOn then DisableControlAction(0, 75) end
-			
-			currentSpeed = math.ceil(GetEntitySpeed(car))
-			currentDamage = math.ceil(GetVehicleBodyHealth(car))
+			currentSpeed = GetEntitySpeed(cache.vehicle) * 3.6
+			currentDamage = math.ceil(GetVehicleBodyHealth(cache.vehicle))
 
-			for i = 1, 20 do
+			for i = 1, 2 do
 				previousDamage[i] = math.ceil(GetVehicleBodyHealth(cache.vehicle))
-				Wait(10)
+				velBuffer[i] = GetEntityVelocity(cache.vehicle)
+				Wait(100)
 			end
 
-			print(currentSpeed * 3.6)
-			print('PREVIOU'..math.ceil(previousDamage[20]))
+			 print(seatbelt)
 
-			if (currentSpeed * 3.6 > 40)
-				and currentDamage - previousDamage[20] > 10 then
+			if currentSpeed > 40
+				and currentDamage - previousDamage[2] > 10
+				and not seatbelt
+				then
 			   
 				local co = GetEntityCoords(ped)
 				local fw = Fwv(ped)
 				SetEntityCoords(ped, co.x + fw.x, co.y + fw.y, co.z - 0.47, true, true, true)
 				SetEntityVelocity(ped, velBuffer[2].x, velBuffer[2].y, velBuffer[2].z)
-				Citizen.Wait(1)
-				SetPedToRagdoll(ped, 1000, 1000, 0, 0, 0, 0)
+				Wait(1)
+				SetPedToRagdoll(ped, 1e3, 1e3, 0, false, false, false)
 			end
 				
-			velBuffer[2] = velBuffer[1]
-			velBuffer[1] = GetEntityVelocity(cache.vehicle)
-				
-			if IsControlJustReleased(0, 311) then
-				beltOn = not beltOn				  
-				if beltOn then TriggerEvent('chatMessage', '0')
-				else TriggerEvent('chatMessage', '1') end 
-			end
-			
-		elseif wasInCar then
-			wasInCar = false
-			beltOn = false
-
-		end
 		Wait(100)
+		end
 	end
 end
 
 
 
 CreateThread(function ()
-	do while true do
-	Wait(100)
+	 while true do
+		Wait(1)
 		init()
 		end
-	end
 end)
