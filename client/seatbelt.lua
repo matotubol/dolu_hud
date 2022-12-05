@@ -29,9 +29,7 @@ RegisterCommand('+seatbelt', function ()
 })	  
 	
 end)
-
 RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
-
 
 local function init()
 	local ped = GetPlayerPed(-1)
@@ -54,14 +52,17 @@ local function init()
 
 			 print(currentDamage - previousDamage[2])
 
+			if currentDamage - previousDamage[2] > 20 then
+				SetVehicleEngineOn(cache.vehicle, false, true, false)
+			end
+
 			if currentSpeed > 40
 				and currentDamage - previousDamage[2] > 10
 				and not seatbelt
 				then
-
+				
 				co = GetEntityCoords(ped)
 				fw = Fwv(ped)
-
 				SetEntityCoords(ped, co.x + fw.x, co.y + fw.y, co.z - 0.47, true, true, true)
 				SetEntityVelocity(ped, velBuffer[2].x, velBuffer[2].y, velBuffer[2].z)
 				Wait(1)
