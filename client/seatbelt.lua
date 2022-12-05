@@ -1,6 +1,8 @@
 local velBuffer      = {}
 local seatbelt       = false
 local previousDamage = {}
+local ped = GetPlayerPed(-1)
+
 
 
 IsCar = function(veh)
@@ -32,7 +34,6 @@ end)
 RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
 
 local function init()
-	local ped = GetPlayerPed(-1)
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
 
@@ -81,5 +82,3 @@ CreateThread(function ()
 		Wait(100)
 	 until  GetVehiclePedIsIn(ped, false) > 0
 end)
-RegisterCommand('dolu_hud:seatbelt', toggleSeatbelt)
-RegisterKeyMapping('dolu_hud:seatbelt', 'Toggle seatbelt', 'keyboard', Config.seatbeltKey)
