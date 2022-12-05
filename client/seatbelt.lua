@@ -1,6 +1,6 @@
-local velBuffer    = {}
-local seatbelt = false
-previousDamage     = {}
+local velBuffer      = {}
+local seatbelt       = false
+local previousDamage = {}
 
 
 IsCar = function(veh)
@@ -39,40 +39,37 @@ local function init()
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
 
-	while  true do
-		Wait(1)		
-		if car ~= 0 then
-					
+	while GetVehiclePedIsIn(ped, false) > 0 and GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
+		Wait(1)
+
 			if seatbelt then DisableControlAction(0, 75) end
 			
 			currentSpeed = GetEntitySpeed(cache.vehicle) * 3.6
 			currentDamage = math.ceil(GetVehicleBodyHealth(cache.vehicle))
 
 			for i = 1, 2 do
+				Wait(200)
 				previousDamage[i] = math.ceil(GetVehicleBodyHealth(cache.vehicle))
 				velBuffer[i] = GetEntityVelocity(cache.vehicle)
-				Wait(100)
 			end
 
-			 print(seatbelt)
+			 print(currentDamage - previousDamage[2])
 
 			if currentSpeed > 40
 				and currentDamage - previousDamage[2] > 10
 				and not seatbelt
 				then
-			   
+
+				co = GetEntityCoords(ped)
+				fw = Fwv(ped)
+
 				SetEntityCoords(ped, co.x + fw.x, co.y + fw.y, co.z - 0.47, true, true, true)
 				SetEntityVelocity(ped, velBuffer[2].x, velBuffer[2].y, velBuffer[2].z)
 				Wait(1)
 				SetPedToRagdoll(ped, 1e3, 1e3, 0, false, false, false)
 			end
-				
-		Wait(100)
-		end
 	end
 end
-
-
 
 CreateThread(function ()
 	 while true do
