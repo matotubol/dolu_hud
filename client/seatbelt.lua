@@ -36,6 +36,8 @@ RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
 local function init()
 	local ped = GetPlayerPed(-1)
 	local car = GetVehiclePedIsIn(ped, false)
+	local co = GetEntityCoords(ped)
+	local fw = Fwv(ped)
 
 	while  true do
 		Wait(1)		
@@ -59,8 +61,6 @@ local function init()
 				and not seatbelt
 				then
 			   
-				local co = GetEntityCoords(ped)
-				local fw = Fwv(ped)
 				SetEntityCoords(ped, co.x + fw.x, co.y + fw.y, co.z - 0.47, true, true, true)
 				SetEntityVelocity(ped, velBuffer[2].x, velBuffer[2].y, velBuffer[2].z)
 				Wait(1)
