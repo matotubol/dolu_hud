@@ -1,9 +1,5 @@
 local velBuffer      = {}
-local seatbelt       = false
 local previousDamage = {}
-local ped = GetPlayerPed(-1)
-
-
 
 IsCar = function(veh)
 		    local vc = GetVehicleClass(veh)
@@ -17,34 +13,37 @@ Fwv = function (entity)
 		    return { x = math.cos(hr) * 2.0, y = math.sin(hr) * 2.0 }
       end
 
-RegisterCommand('+seatbelt', function ()
+RegisterCommand('seatbelt', function ()
 
-	if not seatbelt then
-		seatbelt = true
-	elseif seatbelt then
-		seatbelt = false
-	end
+	local seatbelt = LocalPlayer.state.seatbelt
 
-	SendNUIMessage({
-	action = 'setSeatbelt',
-	data = seatbelt
-})	  
+	if GetVehiclePedIsIn(GetPlayerPed(-1), false) > 0 then
+		if not seatbelt then
+			Wait(1500)
+			LocalPlayer.state:set('seatbelt', true, true)
+		elseif seatbelt then
+			Wait(1500)
+			LocalPlayer.state:set('seatbelt', false, true)
+		end
+		print(LocalPlayer.state.seatbelt)
+		SendNUIMessage({
+			action = 'setSeatbelt',
+			data = LocalPlayer.state.seatbelt
+		})
+	end	  
 	
 end)
-RegisterKeyMapping('+seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
+RegisterKeyMapping('seatbelt', 'Toggle Seatbelt', 'keyboard', 'B')
 
 local function init()
+	local ped = GetPlayerPed(-1)
 	local co = GetEntityCoords(ped)
 	local fw = Fwv(ped)
+	if LocalPlayer.state.seatbelt then lib.disableControls:Add(75) end
 
-	if math.ceil(GetVehicleBodyHealth(cache.vehicle)) < 700 then
-		SetVehicleUndriveable(cache.vehicle, true)
-	end
 
 	while GetEntitySpeed(cache.vehicle) * 3.6 > 15 do
 		Wait(1)
-
-			if seatbelt then DisableControlAction(0, 75) end
 			
 			currentSpeed = GetEntitySpeed(cache.vehicle) * 3.6
 			currentDamage = math.ceil(GetVehicleBodyHealth(cache.vehicle))
@@ -53,17 +52,18 @@ local function init()
 				Wait(200)
 				previousDamage[i] = math.ceil(GetVehicleBodyHealth(cache.vehicle))
 				velBuffer[i] = GetEntityVelocity(cache.vehicle)
-			end
-
-			 print(currentDamage)
+			end			
 
 			if currentDamage - previousDamage[2] > 20 then
 				SetVehicleEngineOn(cache.vehicle, false, true, false)
 			end
-
+			if math.ceil(GetVehicleBodyHealth(cache.vehicle)) < 700 then
+				SetVehicleUndriveable(cache.vehicle, true)
+			end
+			print(LocalPlayer.state.seatbelt)
 			if currentSpeed > 40
 				and currentDamage - previousDamage[2] > 10
-				and not seatbelt
+				and not LocalPlayer.state.seatbelt
 				then
 				
 				co = GetEntityCoords(ped)
@@ -78,7 +78,11 @@ end
 
 CreateThread(function ()
 	 repeat
+		if not IsPedInAnyVehicle(PlayerPedId(), false) then
+			LocalPlayer.state:set('seatbelt', false, false) --when player is not in vehicle set to false
+		end
+		print(LocalPlayer.state.seatbelt)
 		init()
-		Wait(100)
-	 until  GetVehiclePedIsIn(ped, false) > 0
+		Wait(1000)
+	 until GetVehiclePedIsIn(ped, false) > 0
 end)
